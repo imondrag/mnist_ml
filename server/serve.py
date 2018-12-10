@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 import predict_digit
 
@@ -36,14 +36,7 @@ def classify():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(img.filename))
             img.save(filepath)
             guess = CLASSIFIER.predict_from_img(filepath)
-            return 'Did you write a ' + str(guess) + '?'
+            return render_template('result.html', result=str(guess))
+            #return 'Did you write a ' + str(guess) + '?'
 
-    return '''
-    <!doctype html>
-    <title>Upload TEST</title>
-    <h1>Upload to Classify</h1>
-    <form method=post enctype=multipart/form-data>
-        <p><input type=file name=file>
-            <input type=submit value=Upload>
-    </form>
-    '''
+    return render_template('index.html')
