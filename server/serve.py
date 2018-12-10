@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 CLASSIFIER = predict_digit.DigitClassifier()
-CLASSIFIER.train()
+CLASSIFIER.read_training_checkpoint()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -35,8 +35,6 @@ def classify():
         if img and allowed_file(img.filename):
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(img.filename))
             img.save(filepath)
-
-            print(filepath)
             guess = CLASSIFIER.predict_from_img(filepath)
             return 'Did you write a ' + str(guess) + '?'
 

@@ -52,14 +52,12 @@ class DigitClassifier():
         # initialize all variables and run init
         self.sess.run(tf.global_variables_initializer())
 
-    def train(self, train=False):
-        # image = sys.argv[1]
-        # train = False if len(sys.argv) == 2 else sys.argv[2]
+    def read_training_checkpoint(self, train=False):
         checkpoint_dir = "cps/"
 
         saver = tf.train.Saver()
-
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+
         if ckpt and ckpt.model_checkpoint_path:
             saver.restore(self.sess, ckpt.model_checkpoint_path)
         else:
@@ -73,23 +71,21 @@ class DigitClassifier():
         # better black and white version
         _, gray_complete = cv2.threshold(255-gray_complete, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
-        digit_image = -np.ones(gray_complete.shape)
         height, width = gray_complete.shape
         side_len = min(height, width)
-
         start_x = width // 2
         start_y = height // 2
         diff = min(height, width) // 2
-        gray = gray_complete[start_y - diff: start_y + diff, start_x - diff: start_x + diff].copy()
+        gray = gray_complete[start_y - diff: start_y + diff, start_x - diff: start_x + diff]
 
         while np.sum(gray[0]) == 0:
             gray = gray[1:]
 
-        while np.sum(gray[:, 0]) == 0:
-            gray = np.delete(gray, 0, 1)
-
         while np.sum(gray[-1]) == 0:
             gray = gray[:-1]
+
+        while np.sum(gray[:, 0]) == 0:
+            gray = np.delete(gray, 0, 1)
 
         while np.sum(gray[:, -1]) == 0:
             gray = np.delete(gray, -1, 1)
@@ -137,3 +133,5 @@ def shift(img, sx, sy):
     shifted = cv2.warpAffine(img, M, (cols, rows))
     return shifted
 
+def squareCropAbout(x, y, side_len):
+    return
